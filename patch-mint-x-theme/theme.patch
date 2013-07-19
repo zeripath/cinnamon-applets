@@ -1,0 +1,38 @@
+diff -ru a/index.theme b/index.theme
+--- a/index.theme	2013-07-08 15:45:26.000000000 +0100
++++ b/index.theme	2013-07-19 14:41:24.776076393 +0100
+@@ -1,11 +1,11 @@
+ [Desktop Entry]
+ Type=X-GNOME-Metatheme
+-Name=Mint-X
++Name=Mint-X-Max
+ Comment=A Linux Mint theme with brushed metal in mintMenu, based on Clearlooks Revamp, Elementary and Faenza.
+ Encoding=UTF-8
+ 
+ [X-GNOME-Metatheme]
+ GtkTheme=Mint-X
+-MetacityTheme=Mint-X
++MetacityTheme=Mint-X-Max
+ IconTheme=Mint-X
+ CursorTheme=default
+diff -ru a/metacity-1/metacity-theme-1.xml b/metacity-1/metacity-theme-1.xml
+--- a/metacity-1/metacity-theme-1.xml	2013-07-08 15:45:26.000000000 +0100
++++ b/metacity-1/metacity-theme-1.xml	2013-07-19 14:44:48.164083356 +0100
+@@ -23,13 +23,15 @@
+ 
+ <frame_geometry name="shaded" parent="normal" rounded_top_left="true" rounded_top_right="true" rounded_bottom_left="false" rounded_bottom_right="false"/>
+ 
+-<frame_geometry name="normal_maximized" parent="normal" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
++<frame_geometry name="normal_maximized" has_title="false" parent="normal" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
+ 	<!-- strip frame spacing off the normal geometry when maximised -->
+ 	<distance name="left_width" value="0"/>
+ 	<distance name="right_width" value="0"/>
+-	<distance name="bottom_height" value="1"/>
++	<distance name="bottom_height" value="0"/>
+ 	<distance name="left_titlebar_edge" value="1"/>
+ 	<distance name="right_titlebar_edge" value="1"/>
++        <distance name="title_vertical_pad" value="0"/>
++        <border name="title_border" left="0" right="0" top="0" bottom="0"/>
+ </frame_geometry>
+ 
+ <frame_geometry name="utility" title_scale="small" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
