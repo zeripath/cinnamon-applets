@@ -20,7 +20,9 @@ for controlling maximized windows.
 
 These features are very helpful if you wish to turn off titlebars for maximized
 windows and have a flipped menu bar. I use this with the cinnamon window
-buttons applet and a modified theme which removes the titlebars.
+buttons applet and a modified theme which removes the titlebars. (Please see the
+associated patch-mint-x-theme project:
+https://github.com/zeripath/cinnamon-applets/tree/master/patch-mint-x-theme )
 
 Installation
 ============
