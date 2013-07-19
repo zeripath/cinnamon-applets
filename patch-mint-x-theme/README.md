@@ -7,7 +7,7 @@ windows no titlebar.
 Installation
 ============
 
-1. Install dconf-tools using: apt-get install dconf-tools
+1. Install dconf-tools using: sudo apt-get install dconf-tools
 1. Extract the zip into a temporary directory
 2. cd into that directory
 3. chmod +x install.sh

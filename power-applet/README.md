@@ -9,11 +9,12 @@ to show all power devices.
 Installation
 ============
 
-1. Extract the zip into a temporary directory
-2. cd into that directory
-3. chmod +x install.sh
-4. ./install.sh
-5. Press ALT-F2, type r, and press ENTER to restart cinnamon.
+1. Install dconf-tools: sudo apt-get install dconf-tools
+2. Extract the zip into a temporary directory
+3. cd into that directory
+4. chmod +x install.sh
+5. ./install.sh
+6. Press ALT-F2, type r, and press ENTER to restart cinnamon.
 
 The install script will replace the default cinnamon power with my
 version of the applet.
