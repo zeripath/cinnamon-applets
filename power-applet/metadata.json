@@ -1,0 +1,6 @@
+{
+ "uuid": "power@zeripath.sdf-eu.org",
+ "name": "Zeripath Power Manager",
+ "description": "Cinnamon power management applet",
+ "icon": "battery-full-charging"
+}
