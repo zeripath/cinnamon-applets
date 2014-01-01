@@ -1,7 +1,7 @@
 power-zeripath.sdf-eu.org
 ===============================
 
-Zeripath's Cinnamon Power
+Zeripath's Cinnamon Power (Now updated for Cinnamon 2.0/Mint 16.0)
 
 This applet is a modified version of the original power but is set by default
 to show all power devices.
