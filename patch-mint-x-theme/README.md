@@ -1,8 +1,9 @@
 Patch Mint-X theme for Maximize
 ===============================
 
-This script takes the local copy of the Mint-X theme and patches it to give maximized
-windows no titlebar.
+This script takes the local copy of the Mint-X theme and patches it to remove
+the titlebar from maximized windows. (The script has been updated to work with
+Mint 16.)
 
 Installation
 ============
