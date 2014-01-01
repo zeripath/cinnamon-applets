@@ -5,5 +5,5 @@ patch -p1 < ../theme.patch
 mkdir -p ~/.themes/
 cd ..
 mv Mint-X-Max ~/.themes/
-export KEY="/org/gnome/desktop/wm/preferences/theme"
+export KEY="/org/cinnamon/desktop/wm/preferences/theme"
 dconf write "$KEY" "'Mint-X-Max'"

@@ -36,3 +36,50 @@ diff -ru a/metacity-1/metacity-theme-1.xml b/metacity-1/metacity-theme-1.xml
  </frame_geometry>
  
  <frame_geometry name="utility" title_scale="small" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
+diff -ru  a/metacity-1/metacity-theme-3.xml b/metacity-1/metacity-theme-3.xml
+--- a/metacity-1/metacity-theme-3.xml	2013-12-03 16:33:42.000000000 +0000
++++ b/metacity-1/metacity-theme-3.xml	2014-01-01 18:58:55.690314617 +0000
+@@ -22,18 +22,7 @@
+ 	<aspect_ratio name="button" value="1"/>
+ </frame_geometry>
+ 
+-<frame_geometry name="maximized" has_title="false" parent="normal" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
+-	<!-- strip frame spacing off the normal geometry when maximised -->
+-	<distance name="left_width" value="1"/>
+-	<distance name="right_width" value="1"/>
+-	<distance name="bottom_height" value="0"/>
+-	<distance name="left_titlebar_edge" value="1"/>
+-	<distance name="right_titlebar_edge" value="1"/>
+-        <distance name="title_vertical_pad" value="0"/>
+-        <border name="title_border" left="0" right="0" top="0" bottom="0"/>
+-</frame_geometry>
+-
+-<frame_geometry name="maximized_with_title" parent="normal" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
++<frame_geometry name="maximized" parent="normal" rounded_top_left="false" rounded_top_right="false" rounded_bottom_left="false" rounded_bottom_right="false">
+ 	<!-- strip frame spacing off the normal geometry when maximised -->
+ 	<distance name="left_width" value="1"/>
+ 	<distance name="right_width" value="1"/>
+@@ -420,19 +409,19 @@
+ 	<button function="maximize" state="prelight" draw_ops="maximize_button_prelight"/>
+ </frame_style>
+ 
+-<frame_style name="normal_tiled_left" geometry="maximized_with_title" parent="normal_maximized">
++<frame_style name="normal_tiled_left" geometry="maximized" parent="normal_maximized">
+ 	<piece position="entire_background" draw_ops="titlebar_maximized"/>
+ </frame_style >
+ 
+-<frame_style name="focused_tiled_left" geometry="maximized_with_title" parent="focused_maximized">
++<frame_style name="focused_tiled_left" geometry="maximized" parent="focused_maximized">
+ 	<piece position="entire_background" draw_ops="titlebar_maximized"/>
+ </frame_style >
+ 
+-<frame_style name="normal_tiled_right" geometry="maximized_with_title" parent="normal_maximized">
++<frame_style name="normal_tiled_right" geometry="maximized" parent="normal_maximized">
+ 	<piece position="entire_background" draw_ops="titlebar_maximized"/>
+ </frame_style >
+ 
+-<frame_style name="focused_tiled_right" geometry="maximized_with_title" parent="focused_maximized">
++<frame_style name="focused_tiled_right" geometry="maximized" parent="focused_maximized">
+ 	<piece position="entire_background" draw_ops="titlebar_maximized"/>
+ </frame_style >
+ 
