@@ -5,9 +5,9 @@ const Lang = imports.lang;
 const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const Pango = imports.gi.Pango;
+const Main = imports.ui.main;
+const Settings = imports.ui.settings;
 
-const POWER_SCHEMA = "org.cinnamon.power"
-const SHOW_PERCENTAGE_KEY = "power-label";
 const BUS_NAME = 'org.cinnamon.SettingsDaemon';
 const OBJECT_PATH = '/org/cinnamon/SettingsDaemon/Power';
 
@@ -34,12 +34,6 @@ const UPDeviceState = {
     FULLY_CHARGED: 4,
     PENDING_CHARGE: 5,
     PENDING_DISCHARGE: 6
-};
-
-const LabelDisplay = {
-    NONE: 'none',
-    PERCENT: 'percent',
-    TIME: 'time'
 };
 
 const PowerManagerInterface = {
@@ -79,7 +73,7 @@ DeviceItem.prototype = {
     _init: function(device) {
         PopupMenu.PopupBaseMenuItem.prototype._init.call(this, { reactive: false });
 
-        let [device_id, device_type, icon, percentage, state, time] = device;
+        let [device_id, device_type, icon, percentage, state, time, timepercentage] = device;
 
         this._box = new St.BoxLayout({ style_class: 'popup-device-menu-item' });
         this._label = new St.Label({ text: this._deviceTypeToString(device_type) });
@@ -126,18 +120,26 @@ DeviceItem.prototype = {
     }
 }
 
-function MyApplet(orientation, panel_height) {
-    this._init(orientation, panel_height);
+function MyApplet(metadata, orientation, panel_height, instanceId) {
+    this._init(metadata, orientation, panel_height, instanceId);
 }
 
 
 MyApplet.prototype = {
     __proto__: Applet.TextIconApplet.prototype,
 
-    _init: function(orientation, panel_height) {        
+    _init: function(metadata, orientation, panel_height, instanceId) {        
         Applet.TextIconApplet.prototype._init.call(this, orientation, panel_height);
         
-        try {                                
+        try {
+            this.metadata = metadata;
+
+            this.settings = new Settings.AppletSettings(this, metadata.uuid, instanceId);
+            this.settings.bindProperty(Settings.BindingDirection.IN, "labelinfo", "labelinfo", this._updateLabel, null);
+            
+            Main.systrayManager.registerRole("power", metadata.uuid);
+            Main.systrayManager.registerRole("battery", metadata.uuid);
+            
             this.menuManager = new PopupMenu.PopupMenuManager(this);
             this.menu = new Applet.AppletPopupMenu(this, orientation);
             this.menuManager.addMenu(this.menu);            
@@ -161,41 +163,15 @@ MyApplet.prototype = {
             this._hasPrimary = false;
             this._primaryDeviceId = null;
             
-            let settings = new Gio.Settings({ schema: POWER_SCHEMA }); 
-            this._labelDisplay = settings.get_string(SHOW_PERCENTAGE_KEY);
             let applet = this;
-            settings.connect('changed::'+SHOW_PERCENTAGE_KEY, function() {
-                applet._switchLabelDisplay(settings.get_string(SHOW_PERCENTAGE_KEY));
-            });
 
             this._batteryItem = new PopupMenu.PopupMenuItem('', { reactive: false });
             this._primaryPercentage = new St.Label();
             this._batteryItem.addActor(this._primaryPercentage, { align: St.Align.END });
             this.menu.addMenuItem(this._batteryItem);
 
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this._otherDevicePosition = 2;
+            this._otherDevicePosition = 1;
             
-            // Setup label display settings
-            this._displayItem = new PopupMenu.PopupSubMenuMenuItem(_("Display"));
-            this.menu.addMenuItem(this._displayItem);
-            this._displayPercentageItem = new PopupMenu.PopupMenuItem(_("Show percentage"));
-            this._displayPercentageItem.connect('activate', Lang.bind(this, function() {
-                settings.set_string(SHOW_PERCENTAGE_KEY, LabelDisplay.PERCENT);
-            }));
-            this._displayItem.menu.addMenuItem(this._displayPercentageItem);
-            this._displayTimeItem = new PopupMenu.PopupMenuItem(_("Show time remaining"));
-            this._displayTimeItem.connect('activate', Lang.bind(this, function() {
-                settings.set_string(SHOW_PERCENTAGE_KEY, LabelDisplay.TIME);
-            }));
-            this._displayItem.menu.addMenuItem(this._displayTimeItem);
-            this._displayNoneItem = new PopupMenu.PopupMenuItem(_("Hide label"));
-            this._displayNoneItem.connect('activate', Lang.bind(this, function() {
-                settings.set_string(SHOW_PERCENTAGE_KEY, LabelDisplay.NONE);
-            }));
-            this._displayItem.menu.addMenuItem(this._displayNoneItem);
-            this._switchLabelDisplay(this._labelDisplay);
-
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.menu.addSettingsAction(_("Power Settings"), 'power');
 
@@ -209,26 +185,6 @@ MyApplet.prototype = {
     
     on_applet_clicked: function(event) {
         this.menu.toggle();        
-    },
-
-    _switchLabelDisplay: function(display) {
-            this._labelDisplay = display;
-
-            this._displayPercentageItem.setShowDot(false);
-            this._displayNoneItem.setShowDot(false);
-            this._displayTimeItem.setShowDot(false);
-
-            if (this._labelDisplay == LabelDisplay.PERCENT) {
-                this._displayPercentageItem.setShowDot(true);
-            }
-            else if (this._labelDisplay == LabelDisplay.TIME) {
-                this._displayTimeItem.setShowDot(true);
-            }
-            else {
-                this._displayNoneItem.setShowDot(true);
-            }
-
-            this._updateLabel();
     },
     
     _readPrimaryDevice: function() {
@@ -289,14 +245,16 @@ MyApplet.prototype = {
             for (let i = 0; i < devices.length; i++) {
                 let [device_id, device_type] = devices[i];
 
-                if (device_type == UPDeviceType.AC_POWER) {
-                    this.set_applet_tooltip(_("AC adapter"));
-                }
-                else if (device_type == UPDeviceType.BATTERY) {
-                    this.set_applet_tooltip(_("Laptop battery"));
-                }
+                if (this._hasPrimary == false) {
+                	if (device_type == UPDeviceType.AC_POWER) {
+                    	this.set_applet_tooltip(_("AC adapter"));
+                	}
+                	else if (device_type == UPDeviceType.BATTERY) {
+                    	this.set_applet_tooltip(_("Laptop battery"));
+               		}
+               	}
 
-                if (device_type == UPDeviceType.AC_POWER || device_id == this._primaryDeviceId)
+                if (device_type == UPDeviceType.AC_POWER || (this._hasPrimary && device_id == this._primaryDeviceId))
                     continue;
 
                 let item = new DeviceItem (devices[i]);
@@ -331,36 +289,44 @@ MyApplet.prototype = {
     _updateLabel: function() {
         this._proxy.GetDevicesRemote(Lang.bind(this, function(devices, error) {
             if (error) {
-                this._mainLabel.set_text("");
+            	this._mainLabel.set_text("");
                 return;
             }
-
-            let labelText = "";
-            if (this._labelDisplay != LabelDisplay.NONE) {
-                for (let i = 0; i < devices.length; i++) {
-                    let [device_id, device_type, icon, percentage, state, time] = devices[i];
-                    if (device_type == UPDeviceType.BATTERY || device_id == this._primaryDeviceId) {
-
-                        if (this._labelDisplay == LabelDisplay.PERCENT || time == 0) {
-                            labelText += C_("percent of battery remaining", "%d%%").format(Math.round(percentage));
-                        }
-                        else if (this._labelDisplay == LabelDisplay.TIME) {
-                            let seconds = time / 60;
-                            let minutes = Math.floor(seconds % 60);
-                            let hours = Math.floor(seconds / 60);
-                            labelText += C_("time of battery remaining", "%d:%02d").format(hours,minutes);
-                        }
-                    }
+            if (this.labelinfo != "nothing") {
+                let labelText = "";
+            	for (let i = 0; i < devices.length; i++) {
+	                let [device_id, device_type, icon, percentage, state, time] = devices[i];
+	                if (device_type == UPDeviceType.BATTERY || device_id == this._primaryDeviceId) {
+	                    if (this.labelinfo == "percentage" || time == 0) {
+	                        labelText += C_("percent of battery remaining", "%d%%").format(Math.round(percentage));
+	                    }
+	                    else if (this.labelinfo == "time") {
+	                        let seconds = Math.round(time / 60);
+	                        let minutes = Math.floor(seconds % 60);
+	                        let hours = Math.floor(seconds / 60);
+	                        labelText += C_("time of battery remaining", "%d:%02d").format(hours,minutes);
+	                    }
+	                    else if (this.labelinfo == "percentage_time") {
+	                        let seconds = Math.round(time / 60);
+	                        let minutes = Math.floor(seconds % 60);
+	                        let hours = Math.floor(seconds / 60);
+	                        labelText += C_("percent of battery remaining", "%d%%").format(Math.round(percentage)) + " (" +
+	                                    C_("time of battery remaining", "%d:%02d").format(hours,minutes) + ")";
+	                    }
+                            labelText += " ";
+	            	}
                 }
+	        this._mainLabel.set_text(labelText.trim());
             }
-            // Display disabled or no battery found... hot-unplugged?
-            this._mainLabel.set_text(labelText);
         }));
-    }
+    },
     
+    on_applet_removed_from_panel: function() {
+        Main.systrayManager.unregisterId(this.metadata.uuid);
+    }
 };
 
-function main(metadata, orientation, panel_height) {  
-    let myApplet = new MyApplet(orientation, panel_height);
+function main(metadata, orientation, panel_height, instanceId) {  
+    let myApplet = new MyApplet(metadata, orientation, panel_height, instanceId);
     return myApplet;      
 }
