@@ -295,6 +295,7 @@ MyApplet.prototype = {
             if (this.labelinfo != "nothing") {
                 let labelText = "";
             	for (let i = 0; i < devices.length; i++) {
+                    try {
 	                let [device_id, device_type, icon, percentage, state, time] = devices[i];
 	                if (device_type == UPDeviceType.BATTERY || device_id == this._primaryDeviceId) {
 	                    if (this.labelinfo == "percentage" || time == 0) {
@@ -315,6 +316,10 @@ MyApplet.prototype = {
 	                    }
                             labelText += " ";
 	            	}
+                    }
+                    catch (e) {
+                        global.logError(e);
+                    }
                 }
 	        this._mainLabel.set_text(labelText.trim());
             }
