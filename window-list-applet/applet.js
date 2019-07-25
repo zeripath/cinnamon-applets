@@ -581,7 +581,7 @@ class AppMenuButton {
     _toggleWindow(fromDrag, doubleClick){
         if (doubleClick) {
             if (this.lastMetaWindow.has(this.metaWindow)) {
-                if (this.llastMetaWindow.get(this.metaWindow)) {
+                if (this.lastMetaWindow.get(this.metaWindow)) {
                     // This window was previously maximized, and we have double clicked it.
                     // Unmaximize and minimize
                     this.metaWindow.unmaximize(Meta.MaximizeFlags.HORIZONTAL | Meta.MaximizeFlags.VERTICAL);
