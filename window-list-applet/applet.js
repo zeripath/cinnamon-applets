@@ -97,7 +97,6 @@ class WindowPreview extends Tooltips.TooltipBase {
 
         this.thumbnailBin = new St.Bin();
         this.actor.add_actor(this.thumbnailBin);
-        this.lastMetaWindow = new WeakMap();
     }
 
     _onEnterEvent(actor, event) {
@@ -234,6 +233,7 @@ class WindowPreview extends Tooltips.TooltipBase {
 
 class AppMenuButton {
     constructor(applet, metaWindow, alert) {
+        this.lastMetaWindow = new WeakMap();
         this.actor = new Cinnamon.GenericContainer({
             name: 'appMenu',
             style_class: 'window-list-item-box',
